@@ -7,7 +7,7 @@
 ** Practica 6: Implementación del TDA Árbol
 ** Autor: Marco Pérez Padilla
 ** Correo: alu0101469348@ull.edu.es
-** Fecha: 22/04/2025
+** Fecha: 25/04/2025
 
 ** Archivo exceptions.h: Declaracion de la clase que maneja los errores 
 **
@@ -15,7 +15,7 @@
 **      Enlaces de interes
 
 ** Historial de revisiones:
-**      22/04/2025 - Creacion (primera version) del codigo
+**      25/04/2025 - Creacion (primera version) del codigo
 **/
 
 #ifndef EXCEPTIONS_H

@@ -15,7 +15,7 @@
 **      Enlaces de interes
 
 ** Historial de revisiones:
-**      22/04/2025 - Creacion (primera version) del codigo
+**      25/04/2025 - Creacion (primera version) del codigo
 **/
 
 #ifndef CHECK_FUNCTIONS_H
