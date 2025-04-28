@@ -16,6 +16,8 @@
 
 ** Historial de revisiones:
 **      25/04/2025 - Creacion (primera version) del codigo
+**      26/04/2025 - Adicion de especializacion ABB
+**      28/04/2025 - Finalizacion version funcional AVL
 **/
 
 #ifndef AB_H
@@ -41,13 +43,17 @@ template <class Key> class AB {
   const NodeB<Key>* getRoot() const {return root_;}
   // Search and insertion virtual methods
   virtual bool search(const Key&) const = 0;
-  virtual bool insert(const Key&) = 0;
+  virtual bool insert(const Key&, bool trace) = 0;
   // Print the inorder path
   void InorderNode(NodeB<Key>*) const;
   void inorder() const;
 };
 
 
+/**
+ * @brief Prints the tree with inorder trace
+ * @param NodeB nodes of the tree
+ */
 template <class Key> void AB<Key>::InorderNode(NodeB<Key>* node) const {
   if (node) {
     InorderNode(node->getLeft());
@@ -59,12 +65,21 @@ template <class Key> void AB<Key>::InorderNode(NodeB<Key>* node) const {
 }
 
 
+/**
+ * @brief void inorder method to be called in the menu
+ */
 template <class Key> void AB<Key>::inorder() const {
   InorderNode(root_);
   std::cout << std::endl;
 }
 
 
+/**
+ * @brief Overload of << operator for trees, printing them in levels
+ * @param ostream os
+ * @param AB tree
+ * @return ostream
+ */
 template <typename Key> std::ostream& operator<<(std::ostream& os, const AB<Key>& tree) {
   std::queue<const NodeB<Key>*> qeueu;
   qeueu.push(tree.getRoot());
@@ -95,9 +110,14 @@ template <typename Key> std::ostream& operator<<(std::ostream& os, const AB<Key>
 template <class Key> class ABB : public AB<Key> {
  public:
   bool search(const Key&) const override;
-  bool insert(const Key&) override;
+  bool insert(const Key&, bool trace) override;
 };
 
+/**
+ * @brief Method for ABB to search a key in it
+ * @param Key key to be searched
+ * @return True if the Key has been found, false otherwise
+ */
 template<class Key> bool ABB<Key>::search(const Key& key) const {
   NodeB<Key>* current = this->root_;
   while (current) {
@@ -113,7 +133,12 @@ template<class Key> bool ABB<Key>::search(const Key& key) const {
 }
 
 
-template<class Key> bool ABB<Key>::insert(const Key& key) {
+/**
+ * @brief Method for ABB to insert a key in it
+ * @param Key key to be inserted
+ * @return True if the Key has been correctly inserted, false otherwise
+ */
+template<class Key> bool ABB<Key>::insert(const Key& key, bool trace) {
   NodeB<Key>** current = &(this->root_);
 
   while (*current) {
@@ -137,17 +162,18 @@ template <class Key> class AVL : public ABB<Key> {
   void rotacion_DD(NodeAVL<Key>* &node, bool trace);
   void rotacion_ID(NodeAVL<Key>* &node, bool trace);
   void rotacion_DI(NodeAVL<Key>* &node, bool trace);
-  void inserta_bal(NodeAVL<Key>* &node, const Key& key, bool& grow, bool trace);
+  void insert_bal(NodeAVL<Key>* &node, const Key& key, bool& grow, bool trace);
 
  public:
-  // Override the base class insert method
-  bool insert(const Key& key) override;
-  
-  // Add a new insert method with trace parameter
-  void insert(const Key& key, bool trace);
+  bool insert(const Key& key, bool trace) override;
 };
 
 
+/**
+ * @brief method that considers left-left rotations
+ * @param NodeAVL node to be rotated
+ * @param bool trace, prints the trace if its value is true
+ */
 template <class Key> void AVL<Key>::rotacion_II(NodeAVL<Key>* &node, bool trace) {
   if (trace) {
     std::cout << "Desbalanceo:" << std::endl;
@@ -171,6 +197,11 @@ template <class Key> void AVL<Key>::rotacion_II(NodeAVL<Key>* &node, bool trace)
 }
 
 
+/**
+ * @brief method that considers right-right rotations
+ * @param NodeAVL node to be rotated
+ * @param bool trace, prints the trace if its value is true
+ */
 template <class Key> void AVL<Key>::rotacion_DD(NodeAVL<Key>* &node, bool trace) {
   if (trace) {
     std::cout << "Desbalanceo:" << std::endl;
@@ -194,6 +225,11 @@ template <class Key> void AVL<Key>::rotacion_DD(NodeAVL<Key>* &node, bool trace)
 }
 
 
+/**
+ * @brief method that considers left-right rotations
+ * @param NodeAVL node to be rotated
+ * @param bool trace, prints the trace if its value is true
+ */
 template <class Key> void AVL<Key>::rotacion_ID(NodeAVL<Key>* &node, bool trace) {
   if (trace) {
     std::cout << "Desbalanceo:" << std::endl;
@@ -221,6 +257,11 @@ template <class Key> void AVL<Key>::rotacion_ID(NodeAVL<Key>* &node, bool trace)
 }
 
 
+/**
+ * @brief method that considers right-left rotations
+ * @param NodeAVL node to be rotated
+ * @param bool trace, prints the trace if its value is true
+ */
 template <class Key> void AVL<Key>::rotacion_DI(NodeAVL<Key>* &node, bool trace) {
   if (trace) {
     std::cout << "Desbalanceo:" << std::endl;
@@ -248,95 +289,97 @@ template <class Key> void AVL<Key>::rotacion_DI(NodeAVL<Key>* &node, bool trace)
 }
 
 
-template <class Key> void AVL<Key>::inserta_bal(NodeAVL<Key>* &node, const Key& key, bool& grow, bool trace) {
+/**
+ * @brief private method that inserts a node balanced in the tree recursively
+ * @param NodeAVL node to be inserted
+ * @param Key key to be inserted
+ * @param bool to track if the tree has grown or not
+ * @param bool to print the trace if it's true
+ */
+template <class Key> void AVL<Key>::insert_bal(NodeAVL<Key>* &node, const Key& key, bool& grow, bool trace) {
   if (!node) {
     node = new NodeAVL<Key>(key);
     grow = true;
     return;
-}
+  }
 
-if (key < node->getData()) {
-    // 1. Obtener referencia al hijo izquierdo como NodeB*
+  if (key < node->getData()) {
     NodeB<Key>*& left_ref = node->getLeft();
     
-    // 2. Convertir a NodeAVL* usando dynamic_cast
     NodeAVL<Key>*& left = reinterpret_cast<NodeAVL<Key>*&>(left_ref);
     if (!left) {
-        // 3. Si no era NodeAVL, crear nuevo nodo AVL
-        left_ref = new NodeAVL<Key>(key);
-        left = static_cast<NodeAVL<Key>*>(left_ref);
-        grow = true;
+      left_ref = new NodeAVL<Key>(key);
+      left = static_cast<NodeAVL<Key>*>(left_ref);
+      grow = true;
     } else {
-        inserta_bal(left, key, grow, trace);
+      insert_bal(left, key, grow, trace);
     }
 
-    // 4. Actualizar balance
     if (grow) {
-        node->setBal(node->getBal() + 1);
-        if (node->getBal() == 2) {
-            if (left->getBal() == 1) {
-                rotacion_II(node, trace);
-            } else {
-                rotacion_ID(node, trace);
-            }
-            grow = false;
-        } else if (node->getBal() == 0) {
-            grow = false;
+      node->setBal(node->getBal() + 1);
+      if (node->getBal() == 2) {
+        if (left->getBal() == 1) {
+          rotacion_II(node, trace);
+        } else {
+          rotacion_ID(node, trace);
         }
+        grow = false;
+      } else if (node->getBal() == 0) {
+        grow = false;
+      }
     }
-} 
-else if (key > node->getData()) {
-    // Lógica simétrica para el lado derecho
+  } 
+  else if (key > node->getData()) {
     NodeB<Key>*& right_ref = node->getRight();
     NodeAVL<Key>*& right = reinterpret_cast<NodeAVL<Key>*&>(right_ref);
     
     if (!right) {
-        right_ref = new NodeAVL<Key>(key);
-        right = static_cast<NodeAVL<Key>*>(right_ref);
-        grow = true;
+      right_ref = new NodeAVL<Key>(key);
+      right = static_cast<NodeAVL<Key>*>(right_ref);
+      grow = true;
     } else {
-        inserta_bal(right, key, grow, trace);
+      insert_bal(right, key, grow, trace);
     }
 
     if (grow) {
-        node->setBal(node->getBal() - 1);
-        if (node->getBal() == -2) {
-            if (right->getBal() == -1) {
-                rotacion_DD(node, trace);
-            } else {
-                rotacion_DI(node, trace);
-            }
-            grow = false;
-        } else if (node->getBal() == 0) {
-            grow = false;
+      node->setBal(node->getBal() - 1);
+      if (node->getBal() == -2) {
+        if (right->getBal() == -1) {
+          rotacion_DD(node, trace);
+        } else {
+          rotacion_DI(node, trace);
         }
+        grow = false;
+      } else if (node->getBal() == 0) {
+        grow = false;
+      }
     }
-}
-else {
+  } else {
     grow = false;
-}
-}
-
-
-template <class Key> bool AVL<Key>::insert(const Key& key) {
-  // Call the new insert method with default trace=false
-  insert(key, false);
-  return true;
+  }
 }
 
 
-template <class Key> void AVL<Key>::insert(const Key& key, bool trace) {
+/**
+ * @brief method that inserts a node in a tree
+ * @param Key key to be inserted
+ * @param bool to print the trace if it's true
+ */
+template <class Key> bool AVL<Key>::insert(const Key& key, bool trace) {
+  if (this->search(key)) {
+    return false;
+  }
+
   bool grow = false;
   NodeB<Key>* root = this->getRoot();
   
   if (!root) {
     this->root_ = new NodeAVL<Key>(key);
-    return;
+    return true;
   }
   
   NodeAVL<Key>* avl_root = dynamic_cast<NodeAVL<Key>*>(root);
   if (!avl_root) {
-    // Convert root NodeB to NodeAVL
     avl_root = new NodeAVL<Key>(root->getData());
     for (NodeB<Key>* child : {root->getLeft(), root->getRight()}) {
       if (child) {
@@ -346,15 +389,15 @@ template <class Key> void AVL<Key>::insert(const Key& key, bool trace) {
           avl_root->setRight(child);
       }
     }
-    // Prevent double deletion
     root->setLeft(nullptr);
     root->setRight(nullptr);
     delete root;
     this->root_ = avl_root;
   }
   
-  inserta_bal(avl_root, key, grow, trace);
+  insert_bal(avl_root, key, grow, trace);
   this->root_ = avl_root;
+  return true;
 }
 
 

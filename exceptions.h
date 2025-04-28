@@ -4,10 +4,10 @@
 ** Grado en Ingenieria Informatica
 ** Asignatura: Algoritmos y Estructuras de Datos Avanzadas
 ** Curso: 2º
-** Practica 6: Implementación del TDA Árbol
+** Practica 5: Algoritmos de ordenación
 ** Autor: Marco Pérez Padilla
 ** Correo: alu0101469348@ull.edu.es
-** Fecha: 25/04/2025
+** Fecha: 22/03/2025
 
 ** Archivo exceptions.h: Declaracion de la clase que maneja los errores 
 **
@@ -15,7 +15,8 @@
 **      Enlaces de interes
 
 ** Historial de revisiones:
-**      25/04/2025 - Creacion (primera version) del codigo
+**      22/03/2025 - Creacion (primera version) del codigo
+**      23/03/2025 - Adicion errores block size y no insercion
 **/
 
 #ifndef EXCEPTIONS_H

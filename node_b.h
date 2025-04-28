@@ -16,6 +16,7 @@
 
 ** Historial de revisiones:
 **      25/04/2025 - Creacion (primera version) del codigo
+**      27/04/2025 - Adicion Nodo AVL para el arbol AVL
 **/
 
 #ifndef NODE_B_H
@@ -61,5 +62,6 @@ template <class Key> class NodeAVL : public NodeB<Key> {
   // Setter
   void setBal(int bal) { bal_ = bal; }
 };
+
 
 #endif
