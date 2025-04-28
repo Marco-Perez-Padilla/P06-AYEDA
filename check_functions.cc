@@ -173,7 +173,7 @@ std::expected<program_options, parse_args_errors> parse_args(int argc, char* arg
     }
   }
 
-  if ((file == true && options.file.empty()) || (options.chosen_size == -1)) {
+  if ((file == true && options.file.empty()) || (chosen_size == true && options.chosen_size == -1)) {
     return std::unexpected(parse_args_errors::missing_argument);
   }
 

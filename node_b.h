@@ -32,17 +32,34 @@ template <class Key> class NodeB {
  public:
   // Constructor
   NodeB(const Key& data, NodeB<Key>* left = nullptr, NodeB<Key>* right = nullptr) : data_(data), left_(left), right_(right) {}
-  ~NodeB() {
+  virtual ~NodeB() {
     delete left_;
     delete right_;
   }
   // Getters
   Key getData() const {return data_;}
-  NodeB<Key>* getLeft() const {return left_;}
-  NodeB<Key>* getRight() const {return right_;}
+  NodeB<Key>*& getLeft() { return left_; }
+  NodeB<Key>*& getRight() { return right_; }
+  // Mantener los getters constantes para acceso de solo lectura
+  NodeB<Key>* getLeft() const { return left_; }
+  NodeB<Key>* getRight() const { return right_; }
   // Setters
+  void setData(const Key& data) {data_ = data;}
   void setLeft(NodeB<Key>* left) {left_ = left;}
   void setRight(NodeB<Key>* right) {right_ = right;}
+};
+
+
+template <class Key> class NodeAVL : public NodeB<Key> {
+ private:
+  int bal_;
+ public:
+  // Constructor
+  NodeAVL(const Key& data, NodeB<Key>* left = nullptr, NodeB<Key>* right = nullptr, int bal = 0) : NodeB<Key>(data, left, right), bal_(bal) {}
+  // Getter
+  int getBal() const { return bal_; }
+  // Setter
+  void setBal(int bal) { bal_ = bal; }
 };
 
 #endif
